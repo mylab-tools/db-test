@@ -117,7 +117,43 @@ public class TmpDbFixtureBehavior : IClassFixture<TmpDbFixture>
 }
 ```
 
+### Логирование
 
+Ниже приведён пример лога использования тестовой БД:
 
+```
+--  SQLite (asynchronously)
+CREATE TABLE [FooTable]
+(
+	[Id]    INTEGER        NOT NULL PRIMARY KEY AUTOINCREMENT,
+	[Value] NVarChar(255)      NULL
+)
 
+--  SQLite (asynchronously)
+INSERT INTO [FooTable]
+(
+	[Value]
+)
+VALUES
+(
+	'foo'
+)
+
+--  SQLite (asynchronously)
+INSERT INTO [FooTable]
+(
+	[Value]
+)
+VALUES
+(
+	'bar'
+)
+
+--  SQLite (asynchronously)
+SELECT
+	[t1].[Id],
+	[t1].[Value]
+FROM
+	[FooTable] [t1]
+```
 

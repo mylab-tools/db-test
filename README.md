@@ -10,3 +10,114 @@
 
 `MyLab.DbTest` Предоставляет инструменты для использования в тестах на базе `xUnit` с использование БД (`linq2db`).
 
+### Временная база `TmpDbFixture`
+
+Для модульных или функциональных тестов, в которых необходимо использовать БД, приближённую к реальной,  в основном требуется создание изолированной БД для каждого теста. 
+
+`TmpDbFixture` предоставляет возможность создавать временную БД на базе `sqlite`.  
+
+Для инициирования созданной временной БД используются инициализаторы тестовой БД (`ITestDbInitializer`). Пример инициализатора:
+
+```C#
+public class TestDbInitializer : ITestDbInitializer
+{
+    public async Task InitializeAsync(DataConnection dataConnection)
+    {
+        var t = await dataConnection.CreateTableAsync<Entity>();
+        await t.InsertAsync(() => new Entity { Value = "foo" });
+        await t.InsertAsync(() => new Entity { Value = "bar" });
+    }
+}
+```
+
+Инициализатор может использоваться на весь тестовый класс (`базовый`) - вызывается каждый раз для каждой созданной БД. Или может быть `дополнительным` и он будет вызывается только один раз для создаваемой БД после вызова базового инициализатора, если он указан. 
+
+Основной инициализатор указывается как `generic` параметр у класса `TmpDbFixture<TInitializer>`:
+
+```c#
+public class TmpDbFixtureBehavior : IClassFixture<TmpDbFixture<TestDbInitializer>>
+{
+}
+```
+
+Дополнительный инициализатор указывается явно при создании БД:
+
+```C#
+var additionalInitializer = new AdditionalTestDbInitializer();
+var mgr = await _fxt.CreateDbAsync(additionalInitializer);
+```
+
+Особенности использования инициализаторов:
+
+* их можно не использовать. Например, для тестов на пустой БД
+* допускается любая комбинация
+* базовый инициализатор выполняется раньше дополнительного
+* стоит помнить о коллизиях 
+
+Особенности использования `TmpDbFixture`:
+
+* используется как `test fixture`
+
+* для логирования запросов, необходимо передать в свойство `Output` объект типа `ITestOutputHelper`
+
+* можно указать базовый инициализатор БД 
+
+* можно указать дополнительный инициализатор при создании БД
+
+  
+
+В примере ниже показано, как использовать этот механизм с базовым инициализатором БД:
+
+```C#
+public class TmpDbFixtureBehavior : IClassFixture<TmpDbFixture<TestDbInitializer>>
+{
+    private readonly TmpDbFixture _fxt;
+
+    public TmpDbFixtureBehavior(ITestOutputHelper outputHelper, TmpDbFixture<TestDbInitializer> fxt)
+    {
+        fxt.Output = outputHelper;
+        _fxt = fxt;
+    }
+
+    [Fact]
+    public async Task ShouldContainsPredefinedEntities()
+    {
+        var mgr = await _fxt.CreateDbAsync();
+
+        ...
+    }
+}
+```
+
+Такой подход удобен, если все тесты должны отработать по базе в одном и том же состоянии.
+
+
+
+В следующем примере тест использует дополнительный инициализатор без базового:
+
+```C#
+public class TmpDbFixtureBehavior : IClassFixture<TmpDbFixture>
+{
+    private readonly TmpDbFixture _fxt;
+
+    public TmpDbFixtureBehavior(ITestOutputHelper outputHelper, TmpDbFixture fxt)
+    {
+        fxt.Output = outputHelper;
+        _fxt = fxt;
+    }
+
+    [Fact]
+    public async Task ShouldContainsPredefinedEntities()
+    {
+        var additionalInitializer = new AdditionalTestDbInitializer();
+		var mgr = await _fxt.CreateDbAsync(additionalInitializer);
+
+        ...
+    }
+}
+```
+
+
+
+
+

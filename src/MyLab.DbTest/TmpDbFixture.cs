@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using LinqToDB;
 using LinqToDB.DataProvider.SQLite;
 using MyLab.Db;
 using Xunit;
@@ -58,7 +59,7 @@ namespace MyLab.DbTest
             var filename = $"{Guid.NewGuid():N}.db";
             var cn = $"Data Source={filename};";
 
-            var dbManager = new TestDbManager(new SQLiteDataProvider(), cn)
+            var dbManager = new TestDbManager(new SQLiteDataProvider(ProviderName.SQLite), cn)
             {
                 Output = Output
             };

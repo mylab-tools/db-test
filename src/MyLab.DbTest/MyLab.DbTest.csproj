@@ -8,17 +8,17 @@
     <RepositoryUrl>https://github.com/ozzy-ext-mylab/db-test.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/ozzy-ext-mylab/db-test</PackageProjectUrl>
-    <AssemblyVersion>1.0.1.0907</AssemblyVersion>
-    <FileVersion>1.0.1.0907</FileVersion>
-    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.2.0212</AssemblyVersion>
+    <FileVersion>1.0.2.0212</FileVersion>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="linq2db" Version="2.9.8" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.5" />
-    <PackageReference Include="MyLab.Db" Version="1.2.1" />
+    <PackageReference Include="linq2db" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.0" />
+    <PackageReference Include="MyLab.Db" Version="1.2.2" />
     <PackageReference Include="xunit.abstractions" Version="2.0.3" />
-    <PackageReference Include="xunit.extensibility.core" Version="2.4.0" />
+    <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
   </ItemGroup>
 
 </Project>

@@ -6,11 +6,9 @@
 ```
 Ознакомьтесь с последними изменениями в [журнале изменений](/changelog.md).
 
-## Обзор
-
 `MyLab.DbTest` Предоставляет инструменты для использования в тестах на базе `xUnit` с использование БД (`linq2db`).
 
-### Временная база `TmpDbFixture`
+## Временная база `TmpDbFixture`
 
 Для модульных или функциональных тестов, в которых необходимо использовать БД, приближённую к реальной,  в основном требуется создание изолированной БД для каждого теста. 
 
@@ -64,7 +62,6 @@ var mgr = await _fxt.CreateDbAsync(additionalInitializer);
 
 * можно указать дополнительный инициализатор при создании БД
 
-  
 
 В примере ниже показано, как использовать этот механизм с базовым инициализатором БД:
 
@@ -91,8 +88,6 @@ public class TmpDbFixtureBehavior : IClassFixture<TmpDbFixture<TestDbInitializer
 
 Такой подход удобен, если все тесты должны отработать по базе в одном и том же состоянии.
 
-
-
 В следующем примере тест использует дополнительный инициализатор без базового:
 
 ```C#
@@ -117,7 +112,47 @@ public class TmpDbFixtureBehavior : IClassFixture<TmpDbFixture>
 }
 ```
 
-### Логирование
+## Удалённая база `RemoteDbFixture`
+
+Для случая, когда для интеграционных тестов необходима отдельная БД, например, развёрнутая специально для теста, используйте наследника класса `RemoteDbFixture`.
+
+Наследник должен определить провайдера БД и строку подключения. Например:
+
+```C#
+public class MyTestDbFixture : RemoteDbFixture
+{
+	public MyTestDbFixture()
+        : base(new MySqlPRovider(), "Server=myServerAddress;Database=myDataBase")
+        {
+        }
+}
+
+public class MyTestBehavior : IClassFixture<MyTestDbFixture>
+{
+    private readonly IDbManager _db;
+
+    public MyTestBehavior(ITestOutputHelper outputHelper, MyTestDbFixture fxt)
+    {
+        fxt.Output = outputHelper;
+        _db = fxt.Manager;
+    }
+
+    [Fact]
+    public async Task ShouldContainsPredefinedEntities()
+    {
+        _db.DoOnce().Tab<DbEntity>.Where(...)...
+        ...
+    }
+}
+```
+
+Особенности:
+
+* подключается в начале теста и отключается в конце;
+* ничего не удаляет перед отключением;
+* просто предоставляет доступ к удалённой БД без дополнительного функционала.
+
+## Логирование
 
 Ниже приведён пример лога использования тестовой БД:
 

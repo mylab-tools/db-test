@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using LinqToDB;
-using LinqToDB.DataProvider.SQLite;
 using MyLab.Db;
 using Xunit;
 using Xunit.Abstractions;
@@ -31,9 +29,9 @@ namespace MyLab.DbTest
     /// </summary>
     public class TmpDbFixture : IAsyncLifetime
     {
-        private readonly ITestDbInitializer _initializer;
-        private readonly List<string> _dbFiles = new List<string>();
-        private readonly List<TestDbManager> _dbManagers = new List<TestDbManager>();
+        readonly ITestDbInitializer _initializer;
+        readonly List<string> _dbFiles = new List<string>();
+        readonly List<TestDbManager> _dbManagers = new List<TestDbManager>();
 
         /// <summary>
         /// Test output
@@ -59,7 +57,7 @@ namespace MyLab.DbTest
             var filename = $"{Guid.NewGuid():N}.db";
             var cn = $"Data Source={filename};";
 
-            var dbManager = new TestDbManager(new SQLiteDataProvider(ProviderName.SQLite), cn)
+            var dbManager = new TestDbManager(new DefaultSQLiteProvider(), cn)
             {
                 Output = Output
             };

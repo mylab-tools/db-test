@@ -11,11 +11,11 @@ using Xunit.Abstractions;
 
 namespace MyLab.DbTest
 {
-    class TestDbManager : IDbManager, IAsyncDisposable
+    internal class TestDbManager : IDbManager, IAsyncDisposable
     {
-        private readonly string _connectionString;
-        private readonly IDataProvider _dataProvider;
-        private readonly List<DataConnection> _connections = new List<DataConnection>();
+        readonly string _connectionString;
+        readonly IDataProvider _dataProvider;
+        readonly List<DataConnection> _connections = new List<DataConnection>();
 
         public ITestOutputHelper Output { get; set; }
 
@@ -29,9 +29,12 @@ namespace MyLab.DbTest
 
         public DataConnection Use(string connectionStringName = null)
         {
-            var dc = new DataConnection(_dataProvider, _connectionString);
+            var dOpts = new DataOptions()
+                .UseConnectionString(_dataProvider, _connectionString)
+                .UseTracing(LogTraceInfo);
+            
+            var dc = new DataConnection(dOpts);
 
-            dc.OnTraceConnection += LogTraceInfo;
             _connections.Add(dc);
 
             return dc;
@@ -39,14 +42,14 @@ namespace MyLab.DbTest
 
         public DataContext DoOnce(string connectionStringName = null)
         {
-            var dc =  new DataContext(_dataProvider, _connectionString);
+            var dOpts = new DataOptions()
+                .UseConnectionString(_dataProvider, _connectionString)
+                .UseTracing(LogTraceInfo);
 
-            dc.OnTraceConnection += LogTraceInfo;
-
-            return dc;
+            return new DataContext(dOpts);
         }
 
-        private void LogTraceInfo(TraceInfo info)
+        void LogTraceInfo(TraceInfo info)
         {
             if (info.TraceInfoStep == TraceInfoStep.BeforeExecute)
             {
@@ -59,8 +62,7 @@ namespace MyLab.DbTest
         {
             foreach (var dc in _connections)
             {
-                dc.OnTraceConnection = null;
-                await dc.DisposeAsync(CancellationToken.None);
+                await dc.DisposeAsync();
             }
         }
     }

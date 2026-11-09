@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using LinqToDB;
+using LinqToDB.Async;
 using LinqToDB.Data;
 using LinqToDB.Mapping;
 using MyLab.DbTest;
@@ -11,7 +12,7 @@ namespace UnitTests
 {
     public class TmpDbFixtureBehavior : IClassFixture<TmpDbFixture<TmpDbFixtureBehavior.TestDbInitializer>>
     {
-        private readonly TmpDbFixture _fxt;
+        readonly TmpDbFixture _fxt;
 
         public TmpDbFixtureBehavior(ITestOutputHelper outputHelper, TmpDbFixture<TestDbInitializer> fxt)
         {

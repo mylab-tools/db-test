@@ -14,8 +14,8 @@ namespace MyLab.DbTest
     /// </summary>
     public abstract class RemoteDbFixture : IAsyncLifetime
     {
-        private ITestOutputHelper _output;
-        private readonly TestDbManager _dbManager;
+        ITestOutputHelper _output;
+        readonly TestDbManager _dbManager;
 
         /// <summary>
         /// Test output

@@ -1,4 +1,7 @@
 # MyLab.DbTest
+
+Проект перенесён в репозиторий https://github.com/mylab-tools/db. Данный репозиторий переведён в состояние архива.
+
 [![NuGet Version and Downloads count](https://buildstats.info/nuget/MyLab.DbTest)](https://www.nuget.org/packages/MyLab.DbTest)
 
 ```
